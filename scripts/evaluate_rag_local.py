@@ -1,4 +1,4 @@
-"""Benchmark real do Ollama local, sem Supabase ou JWT.
+r"""Benchmark real do Ollama local, sem Supabase ou JWT.
 
 Executa os embeddings no Ollama e a geração via backend.research.answer_question.
 Apenas a recuperação pgvector é substituída por ranking cosseno em memória.

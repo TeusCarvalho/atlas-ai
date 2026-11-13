@@ -6,13 +6,14 @@ Este documento separa **observações já realizadas** de **testes pendentes**, 
 
 | Área | Evidência | Limite da conclusão |
 | --- | --- | --- |
-| Testes Python | **128/128** testes aprovados na preparação da v12 | Não equivalem a testes E2E ou de produção |
+| Testes Python | **145/145** testes aprovados no Windows após PR #4 | Não equivalem a testes E2E ou de produção |
 | Build React | `npm run build` concluído com Vite `6.4.6` no Windows | Não verifica comportamento de todas as telas |
 | Dependências | `npm audit`: **0 vulnerabilidades detectadas** naquela execução | Auditoria é pontual; não garante segurança futura |
 | Assistente | Cálculo de 200 para 300: **50%** | Uma pergunta validada; duração relatada de 12,12 s |
 | Economia | Interface mostrou IPCA, histórico de 60 meses e projeção de 3 meses | Exatidão estatística não foi auditada externamente |
 | Atlas Data | CSV com três bases; Goiânia com **200** entregas | Um arquivo e uma consulta validados |
-| Deep Research | Pergunta sobre manual respondida com fontes; pergunta sem evidência recebeu abstenção | Não substitui conjunto amplo de avaliação de RAG |
+| Deep Research | Pergunta sobre manual respondida com fontes; pergunta sem evidência recebeu abstenção | Não substitui avaliação E2E de pgvector |
+| Benchmark RAG local | **8/8 critérios heurísticos aprovados** com Ollama, 7 trechos sintéticos e 8 perguntas | Recuperação por cosseno em memória; métricas de palavras-chave, sem pgvector real |
 | Model Lab | `qwen3:4b-instruct` com **4/4 cenários** aprovados em uma repetição | Cenários limitados e sintéticos |
 | Login com duas contas | Interfaces exibiram históricos distintos | Isolamento visual, sem tentativa direta de acesso cruzado na API |
 | Acesso sem login | `/api/history` e `/api/research/documents` retornaram **HTTP 401** | Não comprova ausência de IDOR/BOLA com token válido |
@@ -62,7 +63,7 @@ Os itens listados são um **roteiro de nova execução**, não indicação de qu
 
 ## Próximas avaliações de IA
 
-**RAG:** construir perguntas rotuladas sobre um conjunto de documentos fictícios; medir recuperação de evidências, precisão das referências, respostas não sustentadas e abstenções corretas.
+**RAG:** já existe benchmark com perguntas rotuladas e métricas heurísticas em [AVALIACAO_RAG.md](AVALIACAO_RAG.md). Ampliar o conjunto e acrescentar avaliação E2E com pgvector, autorização cruzada e revisão humana.
 
 **Agent Studio:** avaliar seleção de ferramentas, validação de argumentos, cenários negativos e comportamento em entradas adversariais.
 

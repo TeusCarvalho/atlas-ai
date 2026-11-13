@@ -22,7 +22,7 @@ import pandas as pd
 from backend.auth_store import Actor, require_actor, settings, insert_run, insert_messages, list_runs, list_messages, read_run
 from backend import research, model_lab
 
-app = FastAPI(title="Atlas Agent Studio API", version="11.0.0", docs_url="/docs")
+app = FastAPI(title="Atlas Agent Studio API", version="12.0.0", docs_url="/docs")
 # Apenas dev local. Produção exige autenticação, TLS e politicas de acesso.
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
                    allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
@@ -82,7 +82,7 @@ class ChatBody(SessionBody):
 @app.get('/api/health')
 def health():
     configured = settings() is not None
-    return {'status': 'ok', 'version': '11.0.0', 'modelo': MODEL,
+    return {'status': 'ok', 'version': '12.0.0', 'modelo': MODEL,
             'scope': 'local_com_supabase' if configured else 'local',
             'authenticated': configured, 'persistence': configured}
 
