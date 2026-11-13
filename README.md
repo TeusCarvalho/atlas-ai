@@ -125,7 +125,9 @@ npm.cmd run build
 npm.cmd audit
 ```
 
-Na preparação da versão 12, **128 testes automatizados Python** passaram no ambiente de desenvolvimento. Em teste local no Windows, o build de produção concluiu e `npm audit` retornou **zero vulnerabilidades detectadas naquele momento**. Esses resultados não substituem testes de segurança ou de regressão para futuras versões.
+Na preparação da versão 12, **145 testes automatizados Python** foram aprovados no Windows após a integração das melhorias de segurança e de avaliação de RAG. Em teste local no Windows, o build de produção concluiu e `npm audit` retornou **zero vulnerabilidades detectadas naquele momento**. Esses resultados não substituem testes de segurança ou de regressão para futuras versões.
+
+A avaliação local do Deep Research concluiu **8/8 critérios heurísticos** com Ollama, cinco perguntas respondíveis e três de abstenção. A recuperação do benchmark é vetorial em memória, não valida o Supabase pgvector. Veja [Avaliação do RAG](docs/AVALIACAO_RAG.md).
 
 Há também validações manuais de interface, login com duas contas, respostas do RAG, consulta do histórico e respostas 401 para endpoints sem autenticação. **O teste direto de autorização cruzada entre contas via API ainda está pendente**.
 
@@ -172,6 +174,7 @@ atlas-ai/
 - [Arquitetura e fluxos](docs/ARQUITETURA.md)
 - [Segurança e privacidade](docs/SEGURANCA.md)
 - [Testes, evidências e pendências](docs/VALIDACAO.md)
+- [Avaliação local do RAG](docs/AVALIACAO_RAG.md)
 
 ---
 
