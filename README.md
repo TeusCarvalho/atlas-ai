@@ -1,145 +1,178 @@
+# Atlas AI · Agent Studio
 
-# Atlas Agent Studio v12 — Auditoria e correções prioritárias
+**Plataforma experimental de Engenharia de IA**, desenvolvida em Python e React, que combina agentes com ferramentas, análise de dados, séries temporais, pesquisa documental com RAG e avaliação de LLMs locais.
 
-Esta é uma **atualização de manutenção**, não um novo módulo de IA. Preserva os cinco módulos da v11.
+> **Estado:** protótipo funcional para estudos e portfólio. A execução é **local**; não há demonstração pública hospedada. Resultados de previsão e respostas de IA exigem revisão humana antes de qualquer decisão relevante.
 
-## Correções incluídas
-- Atualização do Vite para **6.4.6**, versão com correções de segurança publicadas para a linha 6.
-- `supabase/schema.sql` agora também aceita mensagens do canal `research` em novas instalações; o banco online do Atlas já havia sido corrigido e **não requer execução de SQL novamente**.
-- Regras explícitas de `.gitignore` para impedir que `.env` do frontend seja incluído no Git.
-- Novos testes de regressão sobre instalação, RLS e configurações locais.
-- Scripts `npm run audit:prod` e `npm run audit:all` para auditar dependências instaladas.
+## Visão geral
 
-## O que NÃO foi validado e continua pendente
+O Atlas AI reúne cinco módulos integrados em uma interface web. A inferência de linguagem é feita localmente via **Ollama**; o **Supabase** é usado para autenticação e persistência quando configurado.
 
-1. `npm install` / `npm run build` / `npm audit` com as dependências reais no Windows.
-2. Teste de duas contas reais para verificar isolamento RLS.
-3. Avaliação de RAG baseada em perguntas rotuladas e documentos de referência.
-4. Confirmação de segurança de acesso remoto. **Não exponha** Vite, FastAPI nem Ollama na internet.
-5. Confirmação de proteção contra senhas vazadas no Supabase, se disponível no plano.
+| Módulo | O que demonstra | Tecnologias principais |
+| --- | --- | --- |
+| **Agent Studio** | Chat com ferramentas Python autorizadas, contexto e registro de conversas | Python, FastAPI, Ollama |
+| **Economics** | Consulta de IPCA do Banco Central, previsões e validação temporal | Python, séries temporais, backtesting |
+| **Data Analyst** | Importação de CSV/XLSX e perguntas sobre tabelas | Pandas, OpenPyXL, ferramentas analíticas |
+| **Deep Research** | Ingestão de PDF/TXT/MD, busca semântica e respostas com fontes | Ollama embeddings, Supabase, pgvector |
+| **Model Lab** | Benchmarks controlados de modelos locais com métricas de tempo e desempenho | Ollama API, avaliação de LLMs |
 
-## Atualização rápida no Windows
+A interface também oferece telas de **Modelos**, **Auditoria** e **Histórico** para inspecionar previsões e execuções.
 
-1. Faça backup de `C:\\Users\\Pessoal\\PycharmProjects\\atlas-agent-toolcalling`.
-2. Pare os terminais do frontend e backend com `Ctrl+C`.
-3. Extraia a atualização rápida na raiz do projeto, substituindo apenas os arquivos contidos no ZIP.
-4. Preserve `.env`, `frontend/.env.local`, `.venv`, dados e relatórios.
-5. No terminal principal:
+## Arquitetura
 
-```powershell
-.\\.venv\\Scripts\\python.exe -m pytest -q
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\start_api_windows.ps1
+```mermaid
+flowchart LR
+  U[Usuário / navegador] --> R["React + Vite (127.0.0.1:5173)"]
+  R -->|/api via proxy de desenvolvimento| A["FastAPI (127.0.0.1:8000)"]
+  A -->|inferência, embeddings, benchmarks| O["Ollama local (127.0.0.1:11434)"]
+  A -->|IPCA| B[Banco Central do Brasil]
+  R -->|login| S[Supabase Auth]
+  A -->|JWT do usuário + RLS| D[(Supabase Postgres + pgvector)]
 ```
 
-6. No outro terminal:
+O backend valida o JWT pelo Supabase quando a integração está configurada. O acesso aos registros persistentes utiliza o token do usuário e políticas de **Row Level Security (RLS)**, sem chave `service_role` no navegador.
+
+Leia [Arquitetura](docs/ARQUITETURA.md) para os fluxos de dados, limites e decisões técnicas.
+
+## Tecnologias
+
+**Backend:** Python 3, FastAPI, Pydantic, Pandas, HTTPX, Uvicorn e Pytest.
+**Frontend:** React 18, Vite 6, JavaScript, Lucide e React Markdown.
+**IA e dados:** Ollama, `qwen3:4b-instruct`, `nomic-embed-text`, embeddings vetoriais e pgvector.
+**Infraestrutura local:** PowerShell, Git, Node.js e Supabase opcional para parte das funcionalidades.
+
+## Execução local no Windows
+
+Pré-requisitos: **Python**, **Node.js/npm**, **Git** e **Ollama** instalados. Para usar login, histórico persistente e Deep Research, configure também um projeto **Supabase**.
+
+### 1. Clonar e preparar o backend
 
 ```powershell
-cd "C:\\Users\\Pessoal\\PycharmProjects\\atlas-agent-toolcalling\\frontend"
-npm install
-npm run build
-npm run audit:all
-npm run dev
-```
-
-**Não use `npm audit fix --force`** sem revisar as mudanças.
-Se o audit ainda reportar vulnerabilidades, registre o relatório e corrija os pacotes afetados.
-
-## Critério de conclusão
-A v12 ficará validada quando `pytest`, `npm run build`, auditoria npm, regressão do login, histórico, RAG, Model Lab e testes entre contas forem concluídos.
-
-
----
-
-# Atlas Agent Studio v11 — Model Lab
-
-**Nova funcionalidade:** laboratório para comparar modelos **já instalados no Ollama** em quatro cenários de avaliação controlada. A v11 preserva **Economia, Modelos (previsão do IPCA), Auditoria, Assistente, Atlas Data, Histórico, Deep Research/RAG, Supabase Auth e pgvector**.
-
-## Entrega e limites de validação
-
-- **123 testes automatizados Python aprovados** no ambiente de desenvolvimento (os 102 testes anteriores + 21 novos testes do Model Lab).
-- Código React/JSX verificado sintaticamente com parser TypeScript. **A compilação `npm run build` ainda precisa ser realizada no seu Windows**; o ambiente de criação não conseguiu instalar as dependências do npm.
-- Benchmarks reais exigem Ollama instalado na máquina do usuário; **não foram medidas velocidades reais da RX 6600 LE neste ambiente**.
-- **Nenhuma migração SQL para a v11**: os dados existentes da v9 e da v10 permanecem no Supabase. O Model Lab **não grava resultados ou prompts no banco** e os mantém apenas no estado da aba aberta no navegador.
-- A aplicação é **local**, com FastAPI em `127.0.0.1:8000`, Vite em `127.0.0.1:5173` e Ollama em `127.0.0.1:11434`. Não exponha os serviços à internet sem revisar a arquitetura de segurança.
-
-## 1. Atualização rápida (recomendada)
-
-O projeto existente do usuário fica em:
-
-`C:\Users\Pessoal\PycharmProjects\atlas-agent-toolcalling`
-
-1. Faça uma cópia de segurança dessa pasta.
-2. Pare os terminais do FastAPI e Vite com `Ctrl+C`.
-3. Extraia `atlas-agent-v11-atualizacao-rapida.zip` **diretamente sobre a raiz** `atlas-agent-toolcalling`, substituindo os arquivos correspondentes.
-4. **Não apague ou sobrescreva** `.env`, `frontend/.env.local`, `.venv`, `relatorios` ou outros arquivos pessoais. Eles não fazem parte do ZIP.
-5. **Não execute `supabase/schema.sql` nem `supabase/rag_v10.sql` novamente:** a atualização v11 não modifica o banco.
-
-**Terminal 1 — FastAPI**
-
-```powershell
-cd "C:\Users\Pessoal\PycharmProjects\atlas-agent-toolcalling"
+git clone https://github.com/TeusCarvalho/atlas-ai.git
+cd atlas-ai
+py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m pytest -q
+```
+
+### 2. Preparar os modelos Ollama
+
+```powershell
+ollama pull qwen3:4b-instruct
+ollama pull nomic-embed-text
+```
+
+O primeiro modelo atende o Assistente e o RAG. O segundo gera embeddings para pesquisa documental. Outros modelos instalados podem ser avaliados no Model Lab, conforme sua compatibilidade.
+
+### 3. Configurar o ambiente
+
+Copie os exemplos de configuração, **sem colocar chaves reais no Git**:
+
+```powershell
+Copy-Item .env.example .env
+Copy-Item frontend\.env.example frontend\.env.local
+```
+
+Configure os valores em `.env` e `frontend/.env.local` usando a URL HTTPS do seu projeto Supabase e uma **publishable key**. Não use `service_role`, `sb_secret_` nem credenciais administrativas no frontend.
+
+Para uma instalação **nova** de Supabase, revise os arquivos `supabase/schema.sql` e `supabase/rag_v10.sql`, aplicando-os ao projeto correto por meio do SQL Editor. **Não reaplique essas configurações indiscriminadamente a bancos existentes**; faça migrações controladas. A instalação local sem Supabase permite funcionalidades limitadas, mas não o Deep Research persistente.
+
+### 4. Iniciar o backend
+
+No terminal do PyCharm ou PowerShell, a partir da raiz:
+
+```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start_api_windows.ps1
 ```
 
-**Terminal 2 — React**
+Verifique a API em http://127.0.0.1:8000/docs ou execute:
 
 ```powershell
-cd "C:\Users\Pessoal\PycharmProjects\atlas-agent-toolcalling\frontend"
-npm install
-npm run build
-npm run dev
+Invoke-RestMethod http://127.0.0.1:8000/api/health
 ```
 
-Abra http://127.0.0.1:5173, entre com sua conta Supabase e selecione **Model Lab** no menu.
+### 5. Iniciar o frontend
 
-## 2. Primeiro benchmark
+Em outro PowerShell:
 
-1. Confira que o Ollama está funcionando. `ollama ps` mostra modelos carregados. Os modelos instalados aparecem em `ollama list`.
-2. Na aba **Model Lab**, clique em **Atualizar**. A aplicação detecta os modelos instalados. O modelo de embeddings `nomic-embed-text` não é exibido como opção de chat.
-3. Escolha **qwen3:4b-instruct** e **1 repetição**.
-4. Clique em **Executar benchmark**. A aplicação fará **4 chamadas** sequenciais ao Ollama e mostrará: aprovação, duração, tokens gerados, tokens/segundo, tempo de carga e motivo de parada.
-5. Opcional: escolha também `qwen3:4b`, caso esteja instalado; com dois modelos e uma repetição, serão **8 chamadas** sequenciais. Como sua GPU tem 8 GB de VRAM, comparar um modelo por vez é uma alternativa se houver uso elevado de memória.
-6. Envie uma captura da tabela e do resumo para analisarmos o resultado.
+```powershell
+cd frontend
+npm.cmd ci
+npm.cmd run dev
+```
 
-## 3. O que o Model Lab avalia
+Abra **http://127.0.0.1:5173**. O uso de `npm.cmd` evita o bloqueio de `npm.ps1` em instalações do Windows com execução de scripts restrita.
 
-| Cenário | Critério automatizado | Limitação |
-|---|---|---|
-| Seguir instrução | Responder **ATLAS**, exatamente | Não é avaliação geral de linguagem. |
-| Tool calling | Solicitar `calcular_variacao_percentual` com argumentos `120` e `150` | A função **não é executada**; é avaliada a escolha da ferramenta e parâmetros. |
-| Fidelidade ao contexto | Citar assinatura digital do encarregado e `[Fonte 1]` | **RAG simulado** com um trecho fornecido; não exercita recuperação vetorial real. |
-| Abstenção | Admitir que a fonte não informa preço do diesel | Critério heurístico, não prova ausência de alucinação em outras perguntas. |
+> O frontend e a API são servidores de desenvolvimento. **Não exponha as portas 5173, 8000 ou 11434 à internet.**
 
-Cada cenário retorna aprovado/não aprovado. O percentual é **taxa de aprovação nesses testes específicos**, não uma nota geral de qualidade de IA ou medida científica de acurácia.
+## Como demonstrar o projeto
 
-### Métricas de desempenho
+1. **Assistente:** perguntar a variação percentual de 200 para 300; resposta esperada: **50%**.
+2. **Economics:** analisar 60 meses do IPCA e prever três competências; comparar a previsão com o backtesting. As projeções são experimentais, **não oficiais**.
+3. **Atlas Data:** importar `exemplos/vendas_exemplo.csv` e fazer perguntas sobre a tabela.
+4. **Deep Research:** importar `exemplos/manual_operacional_rag.md`, fazer uma pergunta respondível e outra sem evidências para avaliar a abstenção.
+5. **Model Lab:** executar os quatro cenários em `qwen3:4b-instruct`, começando com uma repetição.
 
-- **Duração da requisição:** tempo observado pelo backend Python, incluindo espera e transmissão local.
-- **Tempo do Ollama:** duração reportada no campo `total_duration` (não é necessariamente igual ao tempo do Python).
-- **Carregamento:** `load_duration`; pode ser maior na primeira execução.
-- **Velocidade de geração (tokens/s):** `eval_count / eval_duration`, usando a duração em segundos. Se o Ollama não fornecer `eval_duration`, a métrica não aparece.
-- **VRAM reportada por Ollama:** obtida de `/api/ps` somente para modelos carregados; **não é a utilização total da GPU**.
+O benchmark do Model Lab verifica critérios específicos (instrução, escolha de ferramenta, fidelidade a contexto fornecido e abstenção). **Não constitui avaliação geral da inteligência do modelo**. O cenário de contexto simula RAG; não mede a recuperação pgvector.
 
-Os testes usam `temperature: 0`, `num_predict: 160`, `think: false`, `keep_alive: 1m`, sem streaming e com prompts fixos. Alguns modelos podem não oferecer tool calling ou não respeitar `think: false`; nesse caso, o resultado pode indicar falha de compatibilidade em vez de baixa qualidade geral.
+## Qualidade e testes
 
-## 4. Aprendizado de Engenharia de IA
+```powershell
+# Na raiz do projeto
+.\.venv\Scripts\python.exe -m pytest -q
 
-- **LLMOps e Evals:** diferencie *taxa de aprovação em cenários específicos* de *qualidade genérica*; avalie limitações de heurísticas de comparação.
-- **Latência vs. throughput:** a primeira resposta pode incluir carga do modelo; velocidade em tokens/s não equivale a tempo total percebido.
-- **Orquestração de testes:** execuções limitadas e sequenciais para reduzir pressão de GPU.
-- **Segurança de agentes:** os testes de seleção de ferramenta **não executam ferramentas** e não permitem chamadas a URLs arbitrárias.
+# Na pasta frontend
+npm.cmd run build
+npm.cmd audit
+```
 
-Referência: documentação oficial da API Ollama: https://docs.ollama.com/api ou https://github.com/ollama/ollama/blob/main/docs/api.md
+Na preparação da versão 12, **128 testes automatizados Python** passaram no ambiente de desenvolvimento. Em teste local no Windows, o build de produção concluiu e `npm audit` retornou **zero vulnerabilidades detectadas naquele momento**. Esses resultados não substituem testes de segurança ou de regressão para futuras versões.
 
-## 5. Checklist de regressão
+Há também validações manuais de interface, login com duas contas, respostas do RAG, consulta do histórico e respostas 401 para endpoints sem autenticação. **O teste direto de autorização cruzada entre contas via API ainda está pendente**.
 
-- Login Supabase continua funcionando.
-- Dados antigos do Histórico continuam disponíveis.
-- Deep Research ainda responde com trechos e fontes (já validado anteriormente pelo usuário).
-- Economia e Atlas Data continuam funcionando.
-- A aba Model Lab lista somente os modelos locais detectados, e um benchmark conclui sem HTTP 500.
-- `npm run build` conclui no Windows.
+Consulte [Validação](docs/VALIDACAO.md) para o checklist e os limites do que foi testado.
 
-**Pendências antes da publicação:** testes de isolamento entre usuários reais, avaliação de RAG com dados de referência, auditoria do `npm audit`, proteção contra senhas vazadas, revisão de dados sensíveis, otimização da UX, e implantação segura. Não publique os serviços Ollama/FastAPI diretamente na internet.
+## Privacidade, segurança e limites
+
+- A interface e o Ollama rodam localmente; a **persistência no Supabase usa a nuvem**.
+- O Deep Research **não armazena o arquivo original no Supabase**, mas armazena **trechos de texto extraídos e embeddings**. Evite documentos confidenciais ou dados pessoais sem avaliação adequada.
+- O Atlas Data mantém o arquivo enviado na memória da sessão local; o histórico remoto armazena metadados e resultados resumidos, não a planilha original.
+- Resultados de agentes, previsões e buscas semânticas podem falhar; referências e percentuais de similaridade não equivalem à garantia de acerto.
+- A publicação do **código** no GitHub é diferente de hospedar a aplicação; a arquitetura atual foi desenhada para desenvolvimento local.
+
+Leia [Segurança](docs/SEGURANCA.md) antes de abrir o repositório ou disponibilizar o serviço publicamente.
+
+## Estrutura do repositório
+
+```text
+atlas-ai/
+├── backend/             # API, autenticação, RAG e Model Lab
+├── frontend/            # React e Vite
+├── supabase/            # Esquema SQL e configuração de RLS/RAG
+├── tests/               # Testes automatizados
+├── exemplos/            # Arquivos fictícios/de demonstração
+├── docs/                # Arquitetura, segurança e validação
+├── atlas_agent.py       # Agente e ferramentas
+├── atlas_pipeline.py    # Pipeline econômico
+├── data_analysis.py     # Leitura e indicadores tabulares
+├── dataset_agent.py     # Consultas sobre dados
+├── requirements.txt
+└── README.md
+```
+
+## Próximas melhorias
+
+- Testes diretos de autorização entre duas contas e de comportamento de RLS em endpoints.
+- Avaliação sistemática do RAG com conjunto de perguntas rotuladas e métricas.
+- Observabilidade de latência e rastreamento de chamadas de IA.
+- Aprimoramentos de UX, streaming e controles de execução.
+- Estratégia de implantação com autenticação e rede segura, **antes** de disponibilizar backend e inferência remotamente.
+
+## Documentação
+
+- [Arquitetura e fluxos](docs/ARQUITETURA.md)
+- [Segurança e privacidade](docs/SEGURANCA.md)
+- [Testes, evidências e pendências](docs/VALIDACAO.md)
+
+---
+
+**Atlas AI é um projeto educacional e demonstrativo de Engenharia de IA.** Não oferece previsões oficiais, consultoria financeira ou garantias de resposta correta.

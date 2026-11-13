@@ -1,55 +1,31 @@
 .venv/
 __pycache__/
 .pytest_cache/
-*.pyc
+*.py[cod]
+
+# Configuracoes de ambiente e credenciais
 .env
+.env.*
+!.env.example
+frontend/.env*
+!frontend/.env.example
+
+# Dependencias e resultados do frontend
+frontend/node_modules/
+frontend/dist/
+
+# IDE, sistema e artefatos locais
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
 logs/
-relatorios/*.md
-!.gitkeep
-frontend/node_modules/
-frontend/dist/
-
-# Arquivos locais do frontend
-frontend/.env*
-!frontend/.env.example
-
-# Configuracoes locais do PyCharm
-.idea/
-
-# Ambientes e credenciais
-.env
-.env.*
-!.env.example
-frontend/.env*
-!frontend/.env.example
-.venv/
-
-# Arquivos temporarios e gerados
 relatorios/
 teste_atlas.csv
-frontend/node_modules/
-frontend/dist/
-__pycache__/
-.pytest_cache/
-*.pyc
 
-
-# Configuracoes locais do PyCharm
-.idea/
-
-# Ambientes e credenciais
-.env
-.env.*
-!.env.example
-frontend/.env*
-!frontend/.env.example
-.venv/
-
-# Arquivos temporarios e gerados
-relatorios/
-teste_atlas.csv
-frontend/node_modules/
-frontend/dist/
-__pycache__/
-.pytest_cache/
-*.pyc
+# Bancos de dados locais e backups
+*.sqlite
+*.sqlite3
+*.db
+*.bak
