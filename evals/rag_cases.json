@@ -1,0 +1,100 @@
+[
+  {
+    "id": "expedicao-veiculo",
+    "question": "O que deve acontecer antes de liberar o veículo para expedição?",
+    "answerable": true,
+    "expected": [
+      [
+        "registro da conferência",
+        "conferência registrada"
+      ],
+      [
+        "assinatura digital"
+      ]
+    ]
+  },
+  {
+    "id": "embalagem-avariada",
+    "question": "Qual o procedimento para uma embalagem avariada?",
+    "answerable": true,
+    "expected": [
+      [
+        "fotograf"
+      ],
+      [
+        "etiqueta de retenção"
+      ],
+      [
+        "qualidade"
+      ]
+    ]
+  },
+  {
+    "id": "inventario-rotativo",
+    "question": "Com que frequência acontece o inventário rotativo e quem autoriza o ajuste?",
+    "answerable": true,
+    "expected": [
+      [
+        "semanal"
+      ],
+      [
+        "gestor"
+      ]
+    ]
+  },
+  {
+    "id": "equipamento-coletor",
+    "question": "Quais itens devem ser verificados nos coletores de dados no começo do turno?",
+    "answerable": true,
+    "expected": [
+      [
+        "bateria"
+      ],
+      [
+        "wi fi",
+        "wifi"
+      ],
+      [
+        "leitor",
+        "codigo de barras"
+      ],
+      [
+        "sincroniza"
+      ]
+    ]
+  },
+  {
+    "id": "indicadores",
+    "question": "Quais são os três indicadores de qualidade acompanhados pela operação?",
+    "answerable": true,
+    "expected": [
+      [
+        "acuracidade"
+      ],
+      [
+        "avarias"
+      ],
+      [
+        "pedidos expedidos"
+      ]
+    ]
+  },
+  {
+    "id": "senha-wifi",
+    "question": "Qual é a senha do Wi-Fi do depósito?",
+    "answerable": false,
+    "expected": []
+  },
+  {
+    "id": "meta-valor",
+    "question": "Qual é o valor numérico exato da meta mensal do índice de avarias?",
+    "answerable": false,
+    "expected": []
+  },
+  {
+    "id": "coordenador-nome",
+    "question": "Qual é o nome completo do coordenador operacional?",
+    "answerable": false,
+    "expected": []
+  }
+]
