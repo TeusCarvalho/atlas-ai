@@ -23,7 +23,8 @@ def test_mocks_detect_explicit_supabase_and_private_key_signatures():
     fake = "sb_secret_" + "Z" * 32
     findings = audit.redacted_findings(fake, "arquivo.py")
     assert ("arquivo.py", "Supabase secret key candidate") in findings
-    assert audit.redacted_findings("-----BEGIN PRIVATE KEY-----", "p.pem")
+    fake_block = "-----BEGIN " + "PRIVATE KEY-----\n" + "A" * 72 + "\n-----END " + "PRIVATE KEY-----"
+    assert audit.redacted_findings(fake_block, "p.pem")
 
 
 def test_example_values_are_not_mistaken_for_real_secrets():
