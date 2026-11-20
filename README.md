@@ -18,6 +18,24 @@ O Atlas AI reúne cinco módulos integrados em uma interface web. A inferência 
 
 A interface também oferece telas de **Modelos**, **Auditoria** e **Histórico** para inspecionar previsões e execuções.
 
+## Galeria visual dos módulos
+
+> **Imagens conceituais de apresentação, geradas por IA com base na interface do protótipo.** Não são capturas autenticadas da aplicação v12: versões, métricas e outros detalhes ilustrados podem diferir do software em execução. Evidências dos testes reais estão em [Validação](docs/VALIDACAO.md).
+
+| Economia | Agent Studio |
+|:---:|:---:|
+| ![Conceito visual da interface Economia do Atlas AI](docs/assets/mockups/economia.webp) | ![Conceito visual da interface Assistente do Atlas AI](docs/assets/mockups/assistente.webp) |
+| Análises econômicas, séries temporais e previsões experimentais | Conversas com LLM local e ferramentas Python autorizadas |
+
+| Atlas Data | Deep Research |
+|:---:|:---:|
+| ![Conceito visual da interface Atlas Data](docs/assets/mockups/atlas-data.webp) | ![Conceito visual da interface Deep Research](docs/assets/mockups/deep-research.webp) |
+| Perguntas em linguagem natural sobre CSV/XLSX | Pesquisa documental com RAG e referências |
+
+**Model Lab — avaliações controladas de LLMs locais**
+
+![Conceito visual da interface Model Lab](docs/assets/mockups/model-lab.webp)
+
 ## Arquitetura
 
 ```mermaid
