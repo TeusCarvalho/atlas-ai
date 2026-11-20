@@ -18,8 +18,10 @@ PATTERNS = {
     "Supabase secret key candidate": re.compile(r"\bsb_secret_[A-Za-z0-9_-]{16,}"),
     "OpenAI API key candidate": re.compile(r"\bsk-(?:proj-)?[A-Za-z0-9_-]{24,}"),
     "AWS access key candidate": re.compile(r"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b"),
-    "Private key marker": re.compile(
+    "Private key block candidate": re.compile(
         r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"
+        r"[\s\S]{0,20000}?"
+        r"-----END (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"
     ),
     "JWT candidate": re.compile(
         r"\beyJ[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{10,}\b"
@@ -85,16 +87,26 @@ def history_scan() -> tuple[set[tuple[str, str]], int]:
     findings: set[tuple[str, str]] = set()
     current = "unknown"
     path = "unknown"
+    added_lines: list[str] = []
+
+    def flush() -> None:
+        if added_lines:
+            findings.update(redacted_findings("\n".join(added_lines), f"{current}:{path}"))
+            added_lines.clear()
+
     for line in diff.splitlines():
         if line.startswith("COMMIT:"):
+            flush()
             current = line[7:19]
         elif line.startswith("diff --git a/"):
+            flush()
             # Paths with spaces are displayed approximately; this is a diagnostic only.
             path = line.split(" b/", 1)[-1]
             if risky_path(path):
                 findings.add((f"{current}:{path}", "Sensitive filename in history"))
         elif line.startswith("+") and not line.startswith("+++"):
-            findings.update(redacted_findings(line[1:], f"{current}:{path}"))
+            added_lines.append(line[1:])
+    flush()
     return findings, commits
 
 
