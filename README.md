@@ -129,7 +129,7 @@ Na preparação da versão 12, **145 testes automatizados Python** foram aprovad
 
 A avaliação local do Deep Research concluiu **8/8 critérios heurísticos** com Ollama, cinco perguntas respondíveis e três de abstenção. A recuperação do benchmark é vetorial em memória, não valida o Supabase pgvector. Veja [Avaliação do RAG](docs/AVALIACAO_RAG.md).
 
-Há também validações manuais de interface, login com duas contas, respostas do RAG, consulta do histórico e respostas 401 para endpoints sem autenticação. **O teste direto de autorização cruzada entre contas via API ainda está pendente**.
+Há também validações manuais de interface, login com duas contas, respostas do RAG, consulta do histórico e respostas 401 para endpoints sem autenticação. O isolamento de dados foi verificado no PostgreSQL/Supabase com duas identidades simuladas e teste transacional de RLS e pgvector, sem deixar registros temporários. **O teste HTTP com dois tokens JWT reais continua pendente**.
 
 Consulte [Validação](docs/VALIDACAO.md) para o checklist e os limites do que foi testado.
 
@@ -163,8 +163,8 @@ atlas-ai/
 
 ## Próximas melhorias
 
-- Testes diretos de autorização entre duas contas e de comportamento de RLS em endpoints.
-- Avaliação sistemática do RAG com conjunto de perguntas rotuladas e métricas.
+- Testes E2E com duas contas reais, JWTs e endpoints FastAPI (o RLS/pgvector já foi conferido diretamente no banco).
+- Ampliar a avaliação RAG existente com cenários adicionais e julgamento humano.
 - Observabilidade de latência e rastreamento de chamadas de IA.
 - Aprimoramentos de UX, streaming e controles de execução.
 - Estratégia de implantação com autenticação e rede segura, **antes** de disponibilizar backend e inferência remotamente.
@@ -175,7 +175,10 @@ atlas-ai/
 - [Segurança e privacidade](docs/SEGURANCA.md)
 - [Testes, evidências e pendências](docs/VALIDACAO.md)
 - [Avaliação local do RAG](docs/AVALIACAO_RAG.md)
+- [Auditoria e checklist de publicação](docs/PUBLICACAO.md)
 
 ---
+
+**Licença proposta:** [MIT](LICENSE) — revisar e aprovar antes de publicar o repositório.
 
 **Atlas AI é um projeto educacional e demonstrativo de Engenharia de IA.** Não oferece previsões oficiais, consultoria financeira ou garantias de resposta correta.
