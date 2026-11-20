@@ -71,11 +71,13 @@ def tracked_scan() -> tuple[set[tuple[str, str]], int, int]:
             if path.stat().st_size > 2 * 1024 * 1024:
                 skipped += 1
                 continue
-            content = path.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
+            data = path.read_bytes()
+        except OSError:
             skipped += 1
             continue
-        findings.update(redacted_findings(content, name))
+        # Decode byte-for-byte to inspect ASCII secret patterns embedded in PNG/WebP
+        # and other binaries; this cannot detect secrets hidden in compression.
+        findings.update(redacted_findings(data.decode("latin-1"), name))
     return findings, len(paths), skipped
 
 
