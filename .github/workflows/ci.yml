@@ -36,6 +36,9 @@ jobs:
       - name: Executar testes
         run: python -m pytest -q
 
+      - name: Verificar arquivos e credenciais versionadas
+        run: python scripts/audit_publication.py --tracked-only
+
   frontend:
     name: React - Build e Seguranca
     runs-on: ubuntu-latest

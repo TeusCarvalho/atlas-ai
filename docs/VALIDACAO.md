@@ -16,6 +16,7 @@ Este documento separa **observações já realizadas** de **testes pendentes**, 
 | Benchmark RAG local | **8/8 critérios heurísticos aprovados** com Ollama, 7 trechos sintéticos e 8 perguntas | Recuperação por cosseno em memória; métricas de palavras-chave, sem pgvector real |
 | Model Lab | `qwen3:4b-instruct` com **4/4 cenários** aprovados em uma repetição | Cenários limitados e sintéticos |
 | Login com duas contas | Interfaces exibiram históricos distintos | Isolamento visual, sem tentativa direta de acesso cruzado na API |
+| Supabase RLS e RPC (19/11/2026) | Teste transacional com duas identidades simuladas: registro/documento/chunk próprios visíveis, RPC própria 1, RPC alheia 0; todos os dados temporários removidos | Valida regras reais do PostgreSQL, **não** a autenticação e o fluxo HTTP com dois JWTs reais |
 | Acesso sem login | `/api/history` e `/api/research/documents` retornaram **HTTP 401** | Não comprova ausência de IDOR/BOLA com token válido |
 
 ## Executar os testes localmente
@@ -50,7 +51,7 @@ curl.exe -s -o NUL -w "HTTP %{http_code}" http://127.0.0.1:8000/api/research/doc
 - [ ] Abrir frontend e confirmar conexão com o backend.
 - [ ] Fazer login com uma conta de teste e consultar histórico.
 - [ ] Fazer login com outra conta de teste; confirmar que cada interface mostra apenas seus dados.
-- [ ] **Pendente:** testar no nível da API se a segunda conta não pode ler dados da primeira por ID, mesmo autenticada.
+- [ ] **Pendente:** testar no nível HTTP/API com duas credenciais reais se a segunda conta não pode ler dados da primeira por ID (o teste RLS direto no banco passou).
 - [ ] Calcular variação percentual com o Assistente.
 - [ ] Executar previsão econômica e conferir tabelas, gráficos e trilha de auditoria.
 - [ ] Importar CSV e XLSX válidos; testar também arquivo inválido/grande.
@@ -74,3 +75,5 @@ Os itens listados são um **roteiro de nova execução**, não indicação de qu
 ## Critério para publicação pública
 
 O repositório de código pode ser preparado para portfólio após revisão de arquivos, credenciais, licenças e documentação. **Hospedar a aplicação acessível pela internet é uma etapa distinta** e exige uma avaliação de segurança própria.
+
+Para a publicação do código, veja também [Checklist de publicação](PUBLICACAO.md).

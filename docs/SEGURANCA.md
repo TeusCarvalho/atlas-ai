@@ -16,7 +16,7 @@ Este documento descreve controles implementados e **limites conhecidos** do Atla
 - **Nunca** inclua `service_role`, `sb_secret_`, tokens pessoais ou senhas em código, documentação ou capturas.
 - Rotacione imediatamente qualquer credencial real que tenha sido comprometida e revise o histórico do Git; remover um arquivo do commit mais recente não o elimina automaticamente do histórico anterior.
 
-A varredura local por expressões regulares realizada antes do primeiro commit verificou 45 arquivos e não encontrou os padrões consultados. Isso **não garante** ausência de todos os tipos de segredos; auditorias posteriores devem usar ferramentas especializadas.
+A varredura inicial examinou 45 arquivos. Em 19/11/2026, uma nova revisão examinou os patches de **20 commits do GitHub, 60 caminhos históricos**, sem localizar correspondências com a seleção de padrões de credenciais reais. Essa verificação **não garante** ausência de todos os tipos de segredos. O script `scripts/audit_publication.py` permite auditoria heurística local de arquivos rastreados e histórico, sem revelar valores encontrados; complemente com ferramenta especializada.
 
 ## Autenticação e RLS
 
@@ -24,7 +24,7 @@ As tabelas `atlas_runs`, `atlas_messages`, `atlas_documents` e `atlas_chunks` us
 
 As rotas de histórico e documentos exigem identidade quando o Supabase está configurado; testes sem token retornaram **HTTP 401** em `/api/history` e `/api/research/documents`.
 
-**Validação já realizada:** duas contas acessaram a interface e apresentaram históricos distintos. **Teste ainda pendente:** tentativa de leitura cruzada e acesso direto a recursos da outra conta pela API, usando duas credenciais válidas de teste. Não utilize credenciais de terceiros, nem publique JWTs em tickets ou logs.
+**Validação já realizada:** duas contas acessaram a interface e apresentaram históricos distintos. **Validação adicional em 19/11/2026:** testes transacionais no PostgreSQL com papéis `authenticated` e identidades simuladas confirmaram RLS nas tabelas e no pgvector: a RPC retornou 1 trecho do usuário e 0 trechos do documento de outro usuário; todas as inserções de teste foram revertidas e a ausência de resíduos foi conferida. **Teste ainda pendente:** tentativa de acesso direto via API com dois tokens JWT reais. Não utilize credenciais de terceiros, nem publique JWTs em tickets ou logs.
 
 > **Atenção ao modo local:** se Supabase URL e chave não estiverem configuradas, o backend oferece modo de desenvolvimento local, com capacidades limitadas e sem autenticação remota. Essa condição reforça a proibição de expor o servidor em rede pública.
 
@@ -55,3 +55,7 @@ Evite usar informações sigilosas, dados pessoais ou documentos corporativos no
 Enquanto o repositório estiver privado, comunique vulnerabilidades diretamente ao responsável pelo projeto. Não abra issues públicas contendo tokens, senhas, dados reais ou caminhos internos de usuários.
 
 Para instruções de validação, consulte [VALIDACAO.md](VALIDACAO.md).
+
+## Preparação do repositório público
+
+Confira [PUBLICACAO.md](PUBLICACAO.md) para varredura do histórico, checklist de revisão, licença proposta e limites da aplicação local.
